@@ -31,6 +31,7 @@ public class PlayerLoreRegister {
 
     public void registerLore(PlayerLore playerLore){
         this.playerLore.put(playerLore.internalName, playerLore);
+        this.playerLoreItemMap.addPlayerLore(playerLore);
     }
 
     public List<String> getLoreNames(){
