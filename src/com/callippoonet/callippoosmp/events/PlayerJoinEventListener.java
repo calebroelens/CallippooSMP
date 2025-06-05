@@ -18,7 +18,7 @@ public class PlayerJoinEventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        PlayerLore playerLore = playerLoreRegister.getMatchingLoreByPlayerPermission(player);
+        PlayerLore playerLore = playerLoreRegister.getPlayerLoreByPlayer(player);
         if (playerLore != null) {
             playerLore.applyConfiguration(player);
         }

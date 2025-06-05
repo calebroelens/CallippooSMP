@@ -29,9 +29,17 @@ public class PlayerLoreCommands implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if(commandSender instanceof Player player){
+            if(Objects.equals(strings[0], "current")){
+                PlayerLore lore = this.register.getPlayerLoreByPlayer(player);
+                if(lore == null){
+                    player.sendMessage(ChatColor.RED + "You do not have a player lore.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are currently a " + lore.displayName);
+                }
+            }
             if(Objects.equals(strings[0], "list")){
                 player.sendMessage(ChatColor.GOLD + "The following lores are available:");
-                for(PlayerLore playerLore : this.register.playerLore.values()){
+                for(PlayerLore playerLore : this.register.getPlayerLores()){
                     player.sendMessage(playerLore.displayName);
                 }
             }
@@ -48,20 +56,14 @@ public class PlayerLoreCommands implements CommandExecutor {
                     player.sendMessage("Player not found.");
                     return false;
                 }
-                PlayerLore playerLore = this.register.playerLore.get(lore);
+                PlayerLore playerLore = this.register.getPlayerLoreByName(lore);
                 if(playerLore == null){
                     player.sendMessage("Lore not found: " + lore);
                     return false;
                 }
                 player.sendMessage("Applied lore " + playerLore.displayName + " to player " + targetPlayer.getName());
-                playerLore.applyConfiguration(targetPlayer);
-                PermissionAttachment attachment = player.addAttachment(this.plugin);
-                attachment.setPermission(playerLore.permissionName, true);
-                for(Map.Entry<String, PlayerLore> entry : this.register.playerLorePermissionMap.entrySet()){
-                    if(!entry.getKey().equals(playerLore.permissionName)){
-                        attachment.unsetPermission(entry.getKey());
-                    }
-                }
+                /* Register the player lore change */
+                this.register.changePlayerSelectedLore(targetPlayer, playerLore);
             }
         }
         return true;

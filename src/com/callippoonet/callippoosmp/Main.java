@@ -17,33 +17,42 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Objects;
 
 
 public class Main extends JavaPlugin {
+
+    PlayerLoreRegister playerLoreRegister;
+
     @Override
     public void onEnable() {
-        Bukkit.getLogger().info("CallippooSMP has been enabled");
+        /* Default setup */
+        this.saveDefaultConfig();
         /* Generate PlayerLoreRegister: Core of the plugin */
-        PlayerLoreRegister playerLoreRegister = this.generatePlayerLoreRegister();
+        playerLoreRegister = this.generatePlayerLoreRegister();
         /* Register Event listeners */
+        this.registerEvents(playerLoreRegister);
+        this.registerCommands(playerLoreRegister);
+    }
+    @Override
+    public void onDisable() {
+        Bukkit.getLogger().info("CallippooSMP has been disabled");
+    }
+
+    public void registerEvents(PlayerLoreRegister playerLoreRegister) {
         getServer().getPluginManager().registerEvents(new BedEventsListener(), this);
-        getServer().getPluginManager().registerEvents(new EnchantsListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new RespawnEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new CraftingEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new CrafterCraftEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new ProjectileEventListener(), this);
-        getServer().getPluginManager().registerEvents(new ExplosionEventListener(), this);
+    }
+
+    public void registerCommands(PlayerLoreRegister playerLoreRegister) {
         PluginCommand loreMainCommand = getCommand("lore");
         if(loreMainCommand != null){
             loreMainCommand.setExecutor(new PlayerLoreCommands(playerLoreRegister, this));
             loreMainCommand.setTabCompleter(new PlayerLoreCommandsTabCompleters(playerLoreRegister));
         }
-    }
-    @Override
-    public void onDisable() {
-        Bukkit.getLogger().info("CallippooSMP has been disabled");
     }
 
     public PlayerLoreRegister generatePlayerLoreRegister(){
@@ -54,9 +63,6 @@ public class Main extends JavaPlugin {
         playerLoreRegister.registerLore(generateZyrothLore());
         playerLoreRegister.registerLore(generateWindchargerLore());
         playerLoreRegister.registerLore(generateUmbraniteLore());
-        for(String loreName: playerLoreRegister.getLoreNames()){
-            Bukkit.getLogger().info("Lore registered: " + loreName);
-        }
         return playerLoreRegister;
     }
 

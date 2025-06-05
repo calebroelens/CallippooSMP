@@ -1,5 +1,6 @@
 package com.callippoonet.callippoosmp.events;
 
+import com.callippoonet.callippoosmp.data.PlayerLoreDataManager;
 import com.callippoonet.callippoosmp.lore.PlayerLore;
 import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
 import org.bukkit.Bukkit;
@@ -23,19 +24,19 @@ public class CraftingEventListener implements Listener {
     @EventHandler
     public void onPlayerCraft(CraftItemEvent event) {
         CraftingRecipe recipe = (CraftingRecipe) event.getRecipe();
-        if(playerLoreRegister.getCraftingRecipesNamedSpaceKeys().contains(recipe.getKey())){
+        if(playerLoreRegister.hasLoreRecipe(recipe)){
             List<HumanEntity> viewers = event.getViewers();
             if(viewers.isEmpty()){
                 event.setCancelled(true);
                 return;
             }
             Player player = (Player) viewers.get(0);
-            PlayerLore lore = playerLoreRegister.getMatchingLoreByPlayerPermission(player);
+            PlayerLore lore = playerLoreRegister.getPlayerLoreByPlayer(player);
             if(lore == null){
                 event.setCancelled(true);
                 return;
             }
-            if(!playerLoreRegister.playerHasCraftingPermission(lore, recipe)){
+            if(lore.hasRecipe(recipe)){
                 event.setCancelled(true);
             }
         }

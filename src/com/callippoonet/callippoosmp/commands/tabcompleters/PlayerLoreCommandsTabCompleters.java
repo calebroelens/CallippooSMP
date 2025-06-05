@@ -26,12 +26,16 @@ public class PlayerLoreCommandsTabCompleters implements TabCompleter {
             subCommands.add("remove");
             subCommands.add("recipe");
             subCommands.add("list");
+            subCommands.add("current");
             return subCommands;
+        }
+        if(Objects.equals(strings[0], "current")){
+           return List.of("current");
         }
         if(strings.length == 2 && Objects.equals(strings[0], "list")){
             return List.of();
         }
-        Set<String> loreNames = this.playerLoreRegister.getLoreNames();
+        List<String> loreNames = this.playerLoreRegister.getLoreNames();
         if(strings.length == 2 && Objects.equals(strings[0], "recipe")){
             return new ArrayList<>(loreNames);
         }

@@ -16,8 +16,9 @@ public class CrafterCraftEventListener implements Listener {
 
     @EventHandler
     public void onCrafterCraftEvent(CrafterCraftEvent event) {
+        /* Player lore items are not craft-able using a crafter */
         CraftingRecipe recipe = event.getRecipe();
-        if(playerLoreRegister.getCraftingRecipesNamedSpaceKeys().contains(recipe.getKey())){
+        if(playerLoreRegister.hasLoreRecipe(recipe)){
             event.setCancelled(true);
         }
     }

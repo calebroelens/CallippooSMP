@@ -18,7 +18,7 @@ public class RespawnEventListener implements Listener {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent event){
         Player player = event.getPlayer();
-        PlayerLore playerLore = playerLoreRegister.getMatchingLoreByPlayerPermission(player);
+        PlayerLore playerLore = playerLoreRegister.getPlayerLoreByPlayer(player);
         if (playerLore != null) {
             playerLore.applyConfiguration(player);
         }

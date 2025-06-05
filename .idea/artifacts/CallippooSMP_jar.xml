@@ -5,6 +5,7 @@
       <element id="module-output" name="CallippooSMP" />
       <element id="extracted-dir" path="$PROJECT_DIR$/../../Minecraft JARS/Spigot/Spigot-API/target/spigot-api-1.21.5-R0.1-SNAPSHOT-shaded.jar" path-in-jar="/" />
       <element id="file-copy" path="$PROJECT_DIR$/src/plugin.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/player_lore.yml" />
     </root>
   </artifact>
 </component>

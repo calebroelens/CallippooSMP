@@ -63,10 +63,7 @@ public class PlayerLore {
 
     public boolean hasRecipe(CraftingRecipe findRecipe){
         for(CraftingRecipe recipe: this.recipes){
-            Bukkit.getLogger().info("Found recipe " + recipe.getKey() + " for " + findRecipe.getKey());
-            if(recipe.getKey().toString().equals(findRecipe.getKey().toString())){
-                return true;
-            }
+            if(recipe.equals(findRecipe)) return true;
         }
         return false;
     }
