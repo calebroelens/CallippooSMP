@@ -1,0 +1,49 @@
+package com.callippoonet.callippoosmp.events;
+
+import com.callippoonet.callippoosmp.lore.PlayerLore;
+import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.inventory.CraftingRecipe;
+
+import java.util.List;
+
+public class CraftingEventListener implements Listener {
+
+    PlayerLoreRegister playerLoreRegister;
+
+    public CraftingEventListener(PlayerLoreRegister playerLoreRegister) {
+        this.playerLoreRegister = playerLoreRegister;
+    }
+
+    @EventHandler
+    public void onPlayerCraft(CraftItemEvent event) {
+        CraftingRecipe recipe = (CraftingRecipe) event.getRecipe();
+        if(playerLoreRegister.getCraftingRecipesNamedSpaceKeys().contains(recipe.getKey())){
+            Bukkit.getLogger().info("Crafting lore item.");
+            List<HumanEntity> viewers = event.getViewers();
+            if(viewers.isEmpty()){
+                event.setCancelled(true);
+                return;
+            }
+            Player player = (Player) viewers.get(0);
+            PlayerLore lore = playerLoreRegister.getMatchingLoreByPlayerPermission(player);
+            if(lore == null){
+                event.setCancelled(true);
+                return;
+            }
+            if(!playerLoreRegister.playerHasCraftingPermission(lore, recipe)){
+                Bukkit.getLogger().info("Crafting lore does not have permission.");
+                event.setCancelled(true);
+            } else {
+                Bukkit.getLogger().info("Crafting lore has permission.");
+            }
+        } else {
+            Bukkit.getLogger().info("Crafting non-lore item.");
+        }
+    }
+}

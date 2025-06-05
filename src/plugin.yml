@@ -1,0 +1,6 @@
+name: CallippooSMP # the plugins name as it should appear in the plugin list /pl
+version: 1.0 # the plugin's version
+author: Caleb Roelens
+main: com.callippoonet.callippoosmp.Main
+website: "https://callippoonet.com"
+api-version: '1.21.5'
