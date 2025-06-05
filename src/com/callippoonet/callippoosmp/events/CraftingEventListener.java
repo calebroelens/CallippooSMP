@@ -24,7 +24,6 @@ public class CraftingEventListener implements Listener {
     public void onPlayerCraft(CraftItemEvent event) {
         CraftingRecipe recipe = (CraftingRecipe) event.getRecipe();
         if(playerLoreRegister.getCraftingRecipesNamedSpaceKeys().contains(recipe.getKey())){
-            Bukkit.getLogger().info("Crafting lore item.");
             List<HumanEntity> viewers = event.getViewers();
             if(viewers.isEmpty()){
                 event.setCancelled(true);
@@ -37,13 +36,8 @@ public class CraftingEventListener implements Listener {
                 return;
             }
             if(!playerLoreRegister.playerHasCraftingPermission(lore, recipe)){
-                Bukkit.getLogger().info("Crafting lore does not have permission.");
                 event.setCancelled(true);
-            } else {
-                Bukkit.getLogger().info("Crafting lore has permission.");
             }
-        } else {
-            Bukkit.getLogger().info("Crafting non-lore item.");
         }
     }
 }

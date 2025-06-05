@@ -4,3 +4,8 @@ author: Caleb Roelens
 main: com.callippoonet.callippoosmp.Main
 website: "https://callippoonet.com"
 api-version: '1.21.5'
+commands:
+  lore:
+    description: Lore management command
+    usage: /lore <action>
+    permission: com.callippoosmp.lore.command

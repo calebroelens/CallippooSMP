@@ -70,6 +70,15 @@ public class LoreItem {
             return this;
         }
 
+        public LoreItemBuilder setCustomModelDataComponentFloat(Float customModelDataComponentFloat) {
+            CustomModelDataComponent dataComponent = itemMeta.getCustomModelDataComponent();
+            List<Float> customModelDataComponentFloats = new ArrayList<>();
+            customModelDataComponentFloats.add(customModelDataComponentFloat);
+            dataComponent.setFloats(customModelDataComponentFloats);
+            itemMeta.setCustomModelDataComponent(dataComponent);
+            return this;
+        }
+
         public LoreItemBuilder addEnchant(Enchantment enchantment, int level) {
             itemMeta.addEnchant(enchantment, level, true);
             return this;

@@ -10,8 +10,8 @@ import java.util.*;
 
 public class PlayerLoreRegister {
 
-    Map<String, PlayerLore> playerLore;
-    Map<String, PlayerLore> playerLorePermissionMap;
+    public Map<String, PlayerLore> playerLore;
+    public Map<String, PlayerLore> playerLorePermissionMap;
     JavaPlugin plugin;
 
     public PlayerLoreRegister(JavaPlugin plugin) {

@@ -1,4 +1,6 @@
 package com.callippoonet.callippoosmp;
+import com.callippoonet.callippoosmp.commands.PlayerLoreCommands;
+import com.callippoonet.callippoosmp.commands.tabcompleters.PlayerLoreCommandsTabCompleters;
 import com.callippoonet.callippoosmp.events.*;
 import com.callippoonet.callippoosmp.lore.LoreItem;
 import com.callippoonet.callippoosmp.lore.PlayerLore;
@@ -8,11 +10,14 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Objects;
 
 
 public class Main extends JavaPlugin {
@@ -28,6 +33,13 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new RespawnEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new CraftingEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new CrafterCraftEventListener(playerLoreRegister), this);
+        getServer().getPluginManager().registerEvents(new ProjectileEventListener(), this);
+        getServer().getPluginManager().registerEvents(new ExplosionEventListener(), this);
+        PluginCommand loreMainCommand = getCommand("lore");
+        if(loreMainCommand != null){
+            loreMainCommand.setExecutor(new PlayerLoreCommands(playerLoreRegister, this));
+            loreMainCommand.setTabCompleter(new PlayerLoreCommandsTabCompleters(playerLoreRegister));
+        }
     }
     @Override
     public void onDisable() {
@@ -125,6 +137,27 @@ public class Main extends JavaPlugin {
     }
 
     public PlayerLore generateWindchargerLore(){
+        ItemStack windCharge = new ItemStack(Material.WIND_CHARGE);
+        LoreItem loreItem = new LoreItem.LoreItemBuilder(
+                this,
+                ChatColor.GOLD  + "Infinity Charge",
+                "callippoosmp.lore.item.infinity_charge",
+                windCharge
+        )
+                .setCustomModelDataComponentString("infinity_charge")
+                .setCustomModelDataComponentFloat(2f)
+                .addLore(ChatColor.GRAY + "Gale Force II")
+                .addLore(ChatColor.RED + "This windcharge does not deplete. Somehow.")
+                .addEnchant(Enchantment.INFINITY, 1)
+                .isUnbreakable()
+                .build();
+        NamespacedKey namespacedKey = new NamespacedKey(this, "infinity_charge");
+        ShapedRecipe recipe = new ShapedRecipe(namespacedKey, loreItem.itemStack);
+        recipe.shape("GSG", "SAS", "GSG");
+        recipe.setIngredient('G', Material.GOLD_INGOT);
+        recipe.setIngredient('S', Material.IRON_INGOT);
+        recipe.setIngredient('A', Material.WIND_CHARGE);
+        Bukkit.addRecipe(recipe);
         return new PlayerLore.PlayerLoreBuilder(
                 "windcharger",
                 "callippoosmp.lore.windcharger",
