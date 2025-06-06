@@ -19,7 +19,7 @@ public class PlayerLoreRegister {
     Main plugin;
 
     public PlayerLoreRegister(Main plugin) {
-        this.playerLore = new HashMap<String, PlayerLore>();
+        this.playerLore = new HashMap<>();
         this.playerLoreItemMap = new PlayerLoreItemMap();
         this.plugin = plugin;
         this.createPlayerLoreDataManager();

@@ -1,9 +1,11 @@
 package com.callippoonet.callippoosmp.commands.tabcompleters;
 
+import com.callippoonet.callippoosmp.Permissions;
 import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
@@ -19,36 +21,83 @@ public class PlayerLoreCommandsTabCompleters implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        Bukkit.getLogger().info("onTabComplete: " + Arrays.toString(strings));
+        if(strings.length == 0) return List.of();
         if(strings.length == 1){
-            List<String> subCommands = new ArrayList<>();
-            subCommands.add("set");
-            subCommands.add("remove");
-            subCommands.add("recipe");
-            subCommands.add("list");
-            subCommands.add("current");
-            return subCommands;
+            return handleSubCommands(commandSender, command, s, strings);
+        } else {
+            /* Management */
+            if(Permissions.hasLoreManagement(commandSender)){
+                if (strings[0].equals("set")) {
+                    return handleSubCommandSet(commandSender, command, s, strings);
+                }
+            }
+            /* All */
+            switch (strings[0]){
+                case "remove":
+                    return handleSubCommandRemove(commandSender, command, s, strings);
+                case "list":
+                    return handleSubCommandList(commandSender, command, s, strings);
+                case "recipe":
+                    return handleSubCommandRecipe(commandSender, command, s, strings);
+                case "current":
+                    return handleSubCommandCurrent(commandSender, command, s, strings);
+                case "choose":
+                    return handleSubCommandChoose(commandSender, command, s, strings);
+            }
         }
-        if(Objects.equals(strings[0], "current")){
-           return List.of("current");
-        }
-        if(strings.length == 2 && Objects.equals(strings[0], "list")){
-            return List.of();
-        }
-        List<String> loreNames = this.playerLoreRegister.getLoreNames();
-        if(strings.length == 2 && Objects.equals(strings[0], "recipe")){
-            return new ArrayList<>(loreNames);
-        }
+        return List.of();
+    }
+
+    public List<String> getOnlinePlayerNames(){
         List<String> playerNames = new ArrayList<>();
         for(Player p : Bukkit.getOnlinePlayers()) {
             playerNames.add(p.getName());
         }
-        if(strings.length == 2 && Objects.equals(strings[0], "set")) {
-            return playerNames;
+        return playerNames;
+    }
+
+    public List<String> getPlayerLoreInternalNames(){
+        return this.playerLoreRegister.getLoreNames();
+    }
+
+    public List<String> handleSubCommands(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(Permissions.hasLoreManagement(commandSender)){
+            return List.of("set", "remove", "recipe", "list", "current", "choose");
         }
-        if(strings.length == 3 && Objects.equals(strings[0], "set")) {
-            return new ArrayList<>(loreNames);
+        else {
+            return List.of("remove", "recipe", "list", "current", "choose");
+        }
+    }
+
+    public List<String> handleSubCommandSet(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(strings.length == 2) return getOnlinePlayerNames();
+        if(strings.length == 3) return getPlayerLoreInternalNames();
+        return List.of();
+    }
+
+    public List<String> handleSubCommandRemove(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(Permissions.hasLoreManagement(commandSender) && strings.length > 1){
+            return getOnlinePlayerNames();
         }
         return List.of();
+    }
+
+    public List<String> handleSubCommandList(CommandSender commandSender, Command command, String s, String[] strings) {
+        return List.of();
+    }
+
+    public List<String> handleSubCommandRecipe(CommandSender commandSender, Command command, String s, String[] strings) {
+        return List.of();
+    }
+
+    public List<String> handleSubCommandCurrent(CommandSender commandSender, Command command, String s, String[] strings) {
+        if(Permissions.hasLoreManagement(commandSender)){
+            if(strings.length == 2) return getOnlinePlayerNames();
+        }
+        return List.of();
+    }
+
+    private List<String> handleSubCommandChoose(CommandSender commandSender, Command command, String s, String[] strings) {
+        return getPlayerLoreInternalNames();
     }
 }
