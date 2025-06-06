@@ -62,6 +62,11 @@ public class PlayerLoreRegister {
         if(playerLore != null){
             playerLore.applyConfiguration(player);
             playerLoreName = playerLore.internalName;
+        } else {
+            PlayerLore activeLore = this.playerLoreDataManager.getActivePlayerLore(player);
+            if(activeLore != null){
+                activeLore.resetConfiguration(player);
+            }
         }
         this.playerLoreDataManager.updatePlayerLore(player, playerLoreName);
     }

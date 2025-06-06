@@ -3,6 +3,7 @@ package com.callippoonet.callippoosmp.lore;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.potion.PotionEffect;
@@ -36,6 +37,11 @@ public class PlayerLore {
         this.applyAttributes(player);
     }
 
+    public void resetConfiguration(Player player){
+        this.removePassiveEffects(player);
+        this.removeAttributes(player);
+    }
+
     public void applyAttributes(Player player){
         if(player == null) return;
         for(Map.Entry<Attribute, Float> entry : this.playerAttributes.entrySet()){
@@ -57,6 +63,24 @@ public class PlayerLore {
                             false
                     );
                     player.addPotionEffect(potionEffect);
+                }
+        );
+    }
+
+    public void removeAttributes(Player player){
+        if(player == null) return;
+        for(Map.Entry<Attribute, Float> entry : this.playerAttributes.entrySet()){
+            AttributeInstance attribute = player.getAttribute(entry.getKey());
+            if(attribute == null) continue;
+            attribute.setBaseValue(attribute.getDefaultValue());
+        }
+    }
+
+    public void removePassiveEffects(Player player){
+        if(player == null) return;
+        this.passiveEffects.forEach(
+                (effectType, effectValue) -> {
+                    player.removePotionEffect(effectType);
                 }
         );
     }

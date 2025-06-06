@@ -154,6 +154,10 @@ public class PlayerLoreCommands implements CommandExecutor {
             commandSender.sendMessage(ChatColor.RED + "This command can only be used by players.");
             return true;
         }
+        if(strings.length < 2){
+            commandSender.sendMessage(ChatColor.RED + "Command incorrect, usage: /lore choose <lore>");
+            return true;
+        }
         return updateLoreForPlayer(commandSender, player, strings[1]);
     }
 
