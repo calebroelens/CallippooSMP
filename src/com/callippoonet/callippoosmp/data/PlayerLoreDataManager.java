@@ -3,7 +3,7 @@ package com.callippoonet.callippoosmp.data;
 import com.callippoonet.callippoosmp.Main;
 import com.callippoonet.callippoosmp.lore.PlayerLore;
 import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
-import org.bukkit.Bukkit;
+import com.callippoonet.callippoosmp.lore.PlayerLoreState;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PlayerLoreDataManager {
@@ -20,9 +23,12 @@ public class PlayerLoreDataManager {
     private FileConfiguration playerLoreData;
     private File playerLoreDataFile;
 
+    private final Map<Player, PlayerLoreState> playerLoreState;
+
     public PlayerLoreDataManager(Main plugin, PlayerLoreRegister playerLoreRegister) {
         this.plugin = plugin;
         this.register = playerLoreRegister;
+        this.playerLoreState = new HashMap<>();
         this.setupDataFile();
     }
 
@@ -38,6 +44,8 @@ public class PlayerLoreDataManager {
     }
 
     public void updatePlayerLore(Player player, String playerLoreName){
+        /* Updating the player lore resets the player lore state */
+        this.setPlayerLoreState(player, null);
         UUID playerUUID = player.getUniqueId();
         playerLoreData.set(playerUUID.toString(), playerLoreName);
         try {
@@ -56,5 +64,19 @@ public class PlayerLoreDataManager {
         } else {
             return this.register.getPlayerLoreByName(playerLoreName);
         }
+    }
+
+    @Nullable
+    public PlayerLoreData getPlayerLoreData(Player player){
+        PlayerLore playerLore = getActivePlayerLore(player);
+        if(playerLore == null) return null;
+        return new PlayerLoreData(
+                playerLore,
+                this.playerLoreState.getOrDefault(player, PlayerLoreState.DEFAULT)
+        );
+    }
+
+    public void setPlayerLoreState(Player player, PlayerLoreState state){
+        this.playerLoreState.put(player, Objects.requireNonNullElse(state, PlayerLoreState.DEFAULT));
     }
 }

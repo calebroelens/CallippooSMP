@@ -2,6 +2,7 @@ package com.callippoonet.callippoosmp.events;
 
 import com.callippoonet.callippoosmp.lore.PlayerLore;
 import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
+import com.callippoonet.callippoosmp.lore.PlayerLoreState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,7 +21,7 @@ public class PlayerJoinEventListener implements Listener {
         Player player = event.getPlayer();
         PlayerLore playerLore = playerLoreRegister.getPlayerLoreByPlayer(player);
         if (playerLore != null) {
-            playerLore.applyConfiguration(player);
+            playerLore.applyConfiguration(player, PlayerLoreState.DEFAULT);
         }
     }
 }

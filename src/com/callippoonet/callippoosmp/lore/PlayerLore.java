@@ -1,5 +1,8 @@
 package com.callippoonet.callippoosmp.lore;
 
+import com.callippoonet.callippoosmp.Main;
+import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnable;
+import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableId;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
@@ -13,47 +16,61 @@ import java.util.*;
 
 public class PlayerLore {
     public String internalName;
-    public String permissionName;
     public String displayName;
     public List<String> description;
-    public Map<PotionEffectType, Integer> passiveEffects;
-    public Map<Attribute, Float> playerAttributes;
+    public Map<PlayerLoreState, Map<PotionEffectType, Integer>> passiveEffects;
+    public Map<PlayerLoreState, Map<Attribute, Float>> playerAttributes;
+    public Map<PlayerLoreRunnableId, PlayerLoreRunnable> playerLoreRunnables;
+    public Map<PlayerLoreState, Map<PlayerLoreRunnableId, PlayerLoreRunnable>> activePlayerLoreRunnables;
     public List<String> permissions;
     public List<CraftingRecipe> recipes;
 
     private PlayerLore(PlayerLoreBuilder builder){
         this.internalName = builder.internalName;
-        this.permissionName = builder.permissionName;
         this.displayName = builder.displayName;
         this.description = builder.description;
         this.passiveEffects = builder.passiveEffects;
         this.playerAttributes = builder.playerAttributes;
+        this.playerLoreRunnables = builder.playerLoreRunnables;
+        this.activePlayerLoreRunnables = builder.activePlayerLoreRunnable;
         this.permissions = builder.permissions;
         this.recipes = builder.recipes;
     }
 
-    public void applyConfiguration(Player player){
-        this.applyPassiveEffects(player);
-        this.applyAttributes(player);
+    public void applyConfiguration(Player player, PlayerLoreState loreState){
+        this.applyPassiveEffects(player, loreState);
+        this.applyAttributes(player, loreState);
     }
 
-    public void resetConfiguration(Player player){
-        this.removePassiveEffects(player);
-        this.removeAttributes(player);
+    public void resetConfiguration(Player player, PlayerLoreState loreState){
+        this.removePassiveEffects(player, loreState);
+        this.removeAttributes(player, loreState);
     }
 
-    public void applyAttributes(Player player){
+    public void resetAllConfigurations(Player player){
+        for(PlayerLoreState loreState : PlayerLoreState.values()){
+            Bukkit.getLogger().info("Resetting configuration for player " + player.getName() + ": " + loreState);
+            this.removePassiveEffects(player, loreState);
+            this.removeAttributes(player, loreState);
+        }
+    }
+
+    public void applyAttributes(Player player, PlayerLoreState loreState){
         if(player == null) return;
-        for(Map.Entry<Attribute, Float> entry : this.playerAttributes.entrySet()){
+        Map<Attribute, Float> attributes = playerAttributes.get(loreState);
+        if(attributes == null) return;
+        for(Map.Entry<Attribute, Float> entry : attributes.entrySet()){
             Objects.requireNonNull(player.getAttribute(entry.getKey())).setBaseValue(entry.getValue());
         }
     }
 
-    public void applyPassiveEffects(Player player){
+    public void applyPassiveEffects(Player player, PlayerLoreState loreState){
         /* Apply the preset configuration */
         if(player == null){return;}
         /* Apply potion effects */
-        this.passiveEffects.forEach(
+        Map<PotionEffectType, Integer> effects = passiveEffects.get(loreState);
+        if(effects == null) return;
+        effects.forEach(
                 (effectType, effectValue) -> {
                     PotionEffect potionEffect = new PotionEffect(
                             effectType,
@@ -67,22 +84,23 @@ public class PlayerLore {
         );
     }
 
-    public void removeAttributes(Player player){
+    public void removeAttributes(Player player, PlayerLoreState loreState){
+        /* Remove attributes */
         if(player == null) return;
-        for(Map.Entry<Attribute, Float> entry : this.playerAttributes.entrySet()){
+        Map<Attribute, Float> attributes = playerAttributes.get(loreState);
+        if(attributes == null) return;
+        for(Map.Entry<Attribute, Float> entry : attributes.entrySet()){
             AttributeInstance attribute = player.getAttribute(entry.getKey());
             if(attribute == null) continue;
             attribute.setBaseValue(attribute.getDefaultValue());
         }
     }
 
-    public void removePassiveEffects(Player player){
+    public void removePassiveEffects(Player player, PlayerLoreState loreState){
         if(player == null) return;
-        this.passiveEffects.forEach(
-                (effectType, effectValue) -> {
-                    player.removePotionEffect(effectType);
-                }
-        );
+        Map<PotionEffectType, Integer> effects = passiveEffects.get(loreState);
+        if(effects == null) return;
+        effects.forEach((effectType, effectValue) -> player.removePotionEffect(effectType));
     }
 
     public boolean hasRecipe(CraftingRecipe findRecipe){
@@ -103,21 +121,23 @@ public class PlayerLore {
 
     public static class PlayerLoreBuilder {
         private final String internalName;
-        private final String permissionName;
         private final String displayName;
         private final List<String> description;
-        private final Map<PotionEffectType, Integer> passiveEffects;
-        private final Map<Attribute, Float> playerAttributes;
+        private final Map<PlayerLoreState, Map<PotionEffectType, Integer>> passiveEffects;
+        private final Map<PlayerLoreState, Map<Attribute, Float>> playerAttributes;
+        private final Map<PlayerLoreRunnableId, PlayerLoreRunnable> playerLoreRunnables;
+        private final Map<PlayerLoreState, Map<PlayerLoreRunnableId, PlayerLoreRunnable>> activePlayerLoreRunnable;
         private final List<String> permissions;
         private final List<CraftingRecipe> recipes;
 
-        public PlayerLoreBuilder(String internalName, String permissionName, String displayName) {
+        public PlayerLoreBuilder(String internalName, String displayName) {
             this.internalName = internalName;
-            this.permissionName = permissionName;
             this.displayName = displayName;
             this.description = new ArrayList<>();
             this.passiveEffects = new HashMap<>();
             this.playerAttributes = new HashMap<>();
+            this.playerLoreRunnables = new HashMap<>();
+            this.activePlayerLoreRunnable = new HashMap<>();
             this.permissions = new ArrayList<>();
             this.recipes = new ArrayList<>();
         }
@@ -132,23 +152,17 @@ public class PlayerLore {
             return this;
         }
 
-        public PlayerLoreBuilder addPassiveEffects(Map<PotionEffectType, Integer> effects) {
-            this.passiveEffects.putAll(effects);
+        public PlayerLoreBuilder addPassiveEffect(PlayerLoreState state, PotionEffectType effect, Integer level) {
+            passiveEffects.computeIfAbsent(state, k -> new HashMap<>()).merge(
+                    effect, level, Integer::sum
+            );
             return this;
         }
 
-        public PlayerLoreBuilder addPassiveEffect(PotionEffectType effect, Integer level) {
-            this.passiveEffects.put(effect, level);
-            return this;
-        }
-
-        public PlayerLoreBuilder addPlayerAttribute(Attribute attribute, Float value){
-            this.playerAttributes.put(attribute, value);
-            return this;
-        }
-
-        public PlayerLoreBuilder addPlayerAttributes(Map<Attribute, Float> playerAttributes) {
-            this.playerAttributes.putAll(playerAttributes);
+        public PlayerLoreBuilder addPlayerAttribute(PlayerLoreState state, Attribute attribute, Float value){
+            playerAttributes.computeIfAbsent(state, k -> new HashMap<>()).merge(
+                    attribute, value, Float::sum
+            );
             return this;
         }
 
@@ -164,6 +178,18 @@ public class PlayerLore {
 
         public PlayerLoreBuilder addRecipe(CraftingRecipe recipe) {
             this.recipes.add(recipe);
+            return this;
+        }
+
+        public PlayerLoreBuilder addPlayerRunnable(PlayerLoreRunnableId runnableId, PlayerLoreRunnable runnable){
+            /* These runnables only start manually */
+            playerLoreRunnables.put(runnableId, runnable);
+            return this;
+        }
+
+        public PlayerLoreBuilder addActivePlayerLoreRunnable(PlayerLoreState state, PlayerLoreRunnableId runnableId, PlayerLoreRunnable runnable){
+            /* These runnables start as soon as the lore is started and run every second */
+            activePlayerLoreRunnable.computeIfAbsent(state, k -> new HashMap<>()).put(runnableId, runnable);
             return this;
         }
 

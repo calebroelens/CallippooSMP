@@ -5,6 +5,9 @@ import com.callippoonet.callippoosmp.events.*;
 import com.callippoonet.callippoosmp.lore.LoreItem;
 import com.callippoonet.callippoosmp.lore.PlayerLore;
 import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
+import com.callippoonet.callippoosmp.lore.PlayerLoreState;
+import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableId;
+import com.callippoonet.callippoosmp.runnable.SwitchLoreStateRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,6 +15,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,7 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Main extends JavaPlugin {
 
-    PlayerLoreRegister playerLoreRegister;
+    public PlayerLoreRegister playerLoreRegister;
 
     @Override
     public void onEnable() {
@@ -41,10 +45,11 @@ public class Main extends JavaPlugin {
     public void registerEvents(PlayerLoreRegister playerLoreRegister) {
         getServer().getPluginManager().registerEvents(new BedEventsListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(playerLoreRegister), this);
-        getServer().getPluginManager().registerEvents(new RespawnEventListener(playerLoreRegister), this);
+        getServer().getPluginManager().registerEvents(new RespawnEventListener(this), this);
         getServer().getPluginManager().registerEvents(new CraftingEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new CrafterCraftEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new ProjectileEventListener(), this);
+        getServer().getPluginManager().registerEvents(new ChatEventListener(this), this);
     }
 
     public void registerCommands(PlayerLoreRegister playerLoreRegister) {
@@ -63,32 +68,47 @@ public class Main extends JavaPlugin {
         playerLoreRegister.registerLore(generateZyrothLore());
         playerLoreRegister.registerLore(generateWindchargerLore());
         playerLoreRegister.registerLore(generateUmbraniteLore());
+        playerLoreRegister.registerLore(generateFaewynnLoreLore());
         return playerLoreRegister;
+    }
+
+    public PlayerLore generateFaewynnLoreLore(){
+        SwitchLoreStateRunnable switchLoreStateRunnable = new SwitchLoreStateRunnable(this);
+        return new PlayerLore.PlayerLoreBuilder(
+                "faewynn",
+                "Faewynn"
+        )
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.GLOWING, 0)
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.REGENERATION, 0)
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.WEAKNESS, 0)
+                .addPassiveEffect(PlayerLoreState.SECONDARY, PotionEffectType.STRENGTH, 1)
+                .addPassiveEffect(PlayerLoreState.SECONDARY, PotionEffectType.SPEED, 0)
+                .addPlayerAttribute(PlayerLoreState.SECONDARY, Attribute.MAX_HEALTH, 12f)
+                .addPlayerRunnable(PlayerLoreRunnableId.SEVEN, switchLoreStateRunnable)
+                .build();
     }
 
     public PlayerLore generateDwarfPlayerLore(){
         return new PlayerLore.PlayerLoreBuilder(
                 "dwarf",
-                "callippoosmp.lore.dwarf",
                 "Dwarf"
         )
                 .addDescription("&cThis little guy fits through every gap, and mines faster than your sight can register.")
-                .addPlayerAttribute(Attribute.SCALE, 0.5f)
-                .addPlayerAttribute(Attribute.BLOCK_BREAK_SPEED, 1.5f)
-                .addPlayerAttribute(Attribute.MAX_HEALTH, 16f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.SCALE, 0.5f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.BLOCK_BREAK_SPEED, 1.5f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.MAX_HEALTH, 16f)
                 .build();
     }
 
     public PlayerLore generateGlibboLore(){
         return new PlayerLore.PlayerLoreBuilder(
                 "glibbo",
-                "callippoosmp.lore.glibbo",
                 "Glibbo"
         )
                 .addDescription("Glibbo Waterfrats is een wat zonderlinge, maar goedbedoelende watermagiër die zich goed voelt in de diepste,")
                 .addDescription("meest vergeten ondergrondse koraalrifgrotten van Minecraftia.")
-                .addPassiveEffect(PotionEffectType.DOLPHINS_GRACE, 1)
-                .addPassiveEffect(PotionEffectType.WATER_BREATHING, 1)
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.DOLPHINS_GRACE, 0)
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.WATER_BREATHING, 0)
                 .build();
     }
 
@@ -118,15 +138,14 @@ public class Main extends JavaPlugin {
         /* Lore builder */
         return new PlayerLore.PlayerLoreBuilder(
                 "aurelius",
-                "callippoosmp.lore.aurelius",
                 "Aurelius"
         )
                 .addDescription("Een oude, wijze tovenaar, bekend om zijn rustige aard, zijn liefde voor de natuur,")
                 .addDescription("vissen, houthakken en meditatie.")
                 .addDescription("Hij geloofde dat magie moest dienen om het leven te verbeteren,")
                 .addDescription("nooit om te vernietigen.")
-                .addPassiveEffect(PotionEffectType.LUCK, 1)
-                .addPassiveEffect(PotionEffectType.HERO_OF_THE_VILLAGE, 7)
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.LUCK, 0)
+                .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.HERO_OF_THE_VILLAGE, 6)
                 .addRecipe(recipe)
                 .build();
     }
@@ -134,7 +153,6 @@ public class Main extends JavaPlugin {
     public PlayerLore generateZyrothLore(){
         return new PlayerLore.PlayerLoreBuilder(
                 "zyroth",
-                "callippoosmp.lore.zyroth",
                 "Zyroth"
         )
                 .addDescription("Een jonge, excentrieke tovenaar die zichzelf The Game Master noemde.")
@@ -166,7 +184,6 @@ public class Main extends JavaPlugin {
         Bukkit.addRecipe(recipe);
         return new PlayerLore.PlayerLoreBuilder(
                 "windcharger",
-                "callippoosmp.lore.windcharger",
                 "Windcharger"
         )
                 .addDescription("This annoying guy spams windcharges.")
@@ -176,7 +193,6 @@ public class Main extends JavaPlugin {
     public PlayerLore generateUmbraniteLore(){
         return new PlayerLore.PlayerLoreBuilder(
                 "umbranite",
-                "callippoosmp.lore.umbranite",
                 "Umbranite"
         ).build();
     }
