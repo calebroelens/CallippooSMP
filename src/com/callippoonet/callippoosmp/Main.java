@@ -50,6 +50,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CrafterCraftEventListener(playerLoreRegister), this);
         getServer().getPluginManager().registerEvents(new ProjectileEventListener(), this);
         getServer().getPluginManager().registerEvents(new ChatEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new SpectralPickaxeListener(), this);
     }
 
     public void registerCommands(PlayerLoreRegister playerLoreRegister) {
@@ -69,6 +70,7 @@ public class Main extends JavaPlugin {
         playerLoreRegister.registerLore(generateWindchargerLore());
         playerLoreRegister.registerLore(generateUmbraniteLore());
         playerLoreRegister.registerLore(generateFaewynnLoreLore());
+        playerLoreRegister.registerLore(generateBurlyBaluf());
         return playerLoreRegister;
     }
 
@@ -187,6 +189,7 @@ public class Main extends JavaPlugin {
                 "Windcharger"
         )
                 .addDescription("This annoying guy spams windcharges.")
+                .addRecipe(recipe)
                 .build();
     }
 
@@ -196,4 +199,37 @@ public class Main extends JavaPlugin {
                 "Umbranite"
         ).build();
     }
+
+    public PlayerLore generateBurlyBaluf(){
+        ItemStack loreItemStack = new ItemStack(Material.IRON_PICKAXE);
+        LoreItem loreItem = new LoreItem.LoreItemBuilder(
+                this, ChatColor.GOLD + "Spectral Pickaxe",
+                "", loreItemStack
+        )
+                .addEnchant(Enchantment.EFFICIENCY, 6)
+                .addLore(ChatColor.GRAY + "Spectral Vision I")
+                .addLore(ChatColor.RED + "Mining blocks magically repairs this pickaxe,")
+                .addLore(ChatColor.RED + "unlocking secret abilities.")
+                .setCustomModelDataComponentString("spectral_pickaxe")
+                .setDurability(31)
+                .setMaxDurability(32)
+                .build();
+        NamespacedKey namespacedKey = new NamespacedKey(this, "spectral_pickaxe");
+        ShapedRecipe recipe = new ShapedRecipe(namespacedKey, loreItem.itemStack);
+        recipe.shape("GSG", "SAS", "GSG");
+        recipe.setIngredient('G', Material.GOLD_INGOT);
+        recipe.setIngredient('S', Material.IRON_INGOT);
+        recipe.setIngredient('A', Material.IRON_PICKAXE);
+        Bukkit.addRecipe(recipe);
+        return new PlayerLore.PlayerLoreBuilder(
+                "burly_baluf",
+                "Burly Brobdingnian Baluf"
+        )
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.SCALE, 0.5f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.MAX_HEALTH, 16f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.BLOCK_BREAK_SPEED, 1.5f)
+                .addRecipe(recipe)
+                .build();
+    }
+
 }

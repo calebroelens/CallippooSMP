@@ -2,6 +2,7 @@ package com.callippoonet.callippoosmp.lore;
 
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -86,6 +87,16 @@ public class LoreItem {
 
         public LoreItemBuilder isUnbreakable() {
             itemMeta.setUnbreakable(true);
+            return this;
+        }
+
+        public LoreItemBuilder setDurability(int durability) {
+            ((Damageable) itemMeta).setDamage(durability);
+            return this;
+        }
+
+        public LoreItemBuilder setMaxDurability(int maxDurability) {
+            ((Damageable) itemMeta).setMaxDamage(maxDurability);
             return this;
         }
 
