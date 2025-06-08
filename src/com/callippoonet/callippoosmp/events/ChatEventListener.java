@@ -4,7 +4,6 @@ import com.callippoonet.callippoosmp.Main;
 import com.callippoonet.callippoosmp.lore.PlayerLore;
 import com.callippoonet.callippoosmp.lore.PlayerLoreRegister;
 import com.callippoonet.callippoosmp.lore.PlayerLoreState;
-import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnable;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableContainer;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableId;
 import org.bukkit.Bukkit;
@@ -12,11 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.scheduler.BukkitTask;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
+
 
 public class ChatEventListener implements Listener {
 
