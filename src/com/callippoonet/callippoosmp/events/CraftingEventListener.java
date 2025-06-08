@@ -36,7 +36,7 @@ public class CraftingEventListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if(lore.hasRecipe(recipe)){
+            if(!lore.hasRecipe(recipe)){
                 event.setCancelled(true);
             }
         }

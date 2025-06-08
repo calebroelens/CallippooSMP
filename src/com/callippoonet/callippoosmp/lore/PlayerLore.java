@@ -105,7 +105,7 @@ public class PlayerLore {
 
     public boolean hasRecipe(CraftingRecipe findRecipe){
         for(CraftingRecipe recipe: this.recipes){
-            if(recipe.equals(findRecipe)) return true;
+            if(findRecipe.getKey().equals(recipe.getKey())) return true;
         }
         return false;
     }
