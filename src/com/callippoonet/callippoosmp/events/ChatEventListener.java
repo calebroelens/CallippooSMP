@@ -57,7 +57,7 @@ public class ChatEventListener implements Listener {
                 this.playerLoreRegister.changePlayerLoreState(player, PlayerLoreState.SECONDARY);
             });
             /* Assign the task to track the progress */
-            runnableContainer.task = runnableContainer.playerLoreRunnable.runTaskLater(plugin, 20L * 7L);
+            runnableContainer.task = runnableContainer.playerLoreRunnable.runTaskLater(plugin, 20L * 7L * 60L);
         }
     }
 }
