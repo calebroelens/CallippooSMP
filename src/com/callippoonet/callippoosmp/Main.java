@@ -16,7 +16,9 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -51,6 +53,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ProjectileEventListener(), this);
         getServer().getPluginManager().registerEvents(new ChatEventListener(this), this);
         getServer().getPluginManager().registerEvents(new SpectralPickaxeListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerBukkitFillEventListener(this), this);
     }
 
     public void registerCommands(PlayerLoreRegister playerLoreRegister) {
@@ -91,6 +94,7 @@ public class Main extends JavaPlugin {
     }
 
     public PlayerLore generateDwarfPlayerLore(){
+        CraftingRecipe recipe = this.getSpectralPickaxeRecipe();
         return new PlayerLore.PlayerLoreBuilder(
                 "dwarf",
                 "Dwarf"
@@ -99,6 +103,7 @@ public class Main extends JavaPlugin {
                 .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.SCALE, 0.5f)
                 .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.BLOCK_BREAK_SPEED, 1.5f)
                 .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.MAX_HEALTH, 16f)
+                .addRecipe(recipe)
                 .build();
     }
 
@@ -201,6 +206,20 @@ public class Main extends JavaPlugin {
     }
 
     public PlayerLore generateBurlyBaluf(){
+        CraftingRecipe recipe = this.getSpectralPickaxeRecipe();
+        Bukkit.addRecipe(recipe);
+        return new PlayerLore.PlayerLoreBuilder(
+                "burly_baluf",
+                "Burly Brobdingnian Baluf"
+        )
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.SCALE, 0.5f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.MAX_HEALTH, 16f)
+                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.BLOCK_BREAK_SPEED, 1.5f)
+                .addRecipe(recipe)
+                .build();
+    }
+
+    public CraftingRecipe getSpectralPickaxeRecipe(){
         ItemStack loreItemStack = new ItemStack(Material.IRON_PICKAXE);
         LoreItem loreItem = new LoreItem.LoreItemBuilder(
                 this, ChatColor.GOLD + "Spectral Pickaxe",
@@ -220,16 +239,7 @@ public class Main extends JavaPlugin {
         recipe.setIngredient('G', Material.GOLD_INGOT);
         recipe.setIngredient('S', Material.IRON_INGOT);
         recipe.setIngredient('A', Material.IRON_PICKAXE);
-        Bukkit.addRecipe(recipe);
-        return new PlayerLore.PlayerLoreBuilder(
-                "burly_baluf",
-                "Burly Brobdingnian Baluf"
-        )
-                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.SCALE, 0.5f)
-                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.MAX_HEALTH, 16f)
-                .addPlayerAttribute(PlayerLoreState.DEFAULT, Attribute.BLOCK_BREAK_SPEED, 1.5f)
-                .addRecipe(recipe)
-                .build();
+        return recipe;
     }
 
 }

@@ -54,7 +54,6 @@ public class SpectralPickaxeListener implements Listener {
             if(itemStackIsSpectralPickaxe(eventItem)){
                 int currentDamage = currentSpectralPickaxeDamage(eventItem);
                 if(currentDamage == 0){
-                    Bukkit.getLogger().info("Setting damage");
                     ItemMeta newMeta = setSpectralPickaxeDamage(eventItem, 32);
                     eventItem.setItemMeta(newMeta);
                     player.getInventory().setItemInMainHand(eventItem);
