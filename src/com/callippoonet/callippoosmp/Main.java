@@ -15,12 +15,19 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.CraftingRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 
 public class Main extends JavaPlugin {
@@ -34,6 +41,7 @@ public class Main extends JavaPlugin {
         /* Generate PlayerLoreRegister: Core of the plugin */
         playerLoreRegister = this.generatePlayerLoreRegister();
         /* Register Event listeners */
+        this.registerGlobalRecipes();
         this.registerEvents(playerLoreRegister);
         this.registerCommands(playerLoreRegister);
     }
@@ -53,6 +61,8 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new SpectralPickaxeListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerBukkitFillEventListener(this), this);
         getServer().getPluginManager().registerEvents(new InfinityLiquidEvent(), this);
+        getServer().getPluginManager().registerEvents(new HappyGhastListener(), this);
+        getServer().getPluginManager().registerEvents(new PotionEffectListener(), this);
     }
 
     public void registerCommands(PlayerLoreRegister playerLoreRegister) {
@@ -61,6 +71,35 @@ public class Main extends JavaPlugin {
             loreMainCommand.setExecutor(new PlayerLoreCommands(playerLoreRegister, this));
             loreMainCommand.setTabCompleter(new PlayerLoreCommandsTabCompleters(playerLoreRegister));
         }
+    }
+
+    public void registerGlobalRecipes() {
+        for(Recipe recipe: this.globalRecipes()){
+            Bukkit.addRecipe(recipe);
+        }
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+    public List<Recipe> globalRecipes(){
+        List<Recipe> globalRecipes = new ArrayList<Recipe>();
+
+        /* Happy ghast food */
+        ItemStack happyGhastFood = new ItemStack(Material.GHAST_TEAR);
+        ItemMeta happyGhastFoodMeta = happyGhastFood.getItemMeta();
+        Objects.requireNonNull(happyGhastFoodMeta).setItemName(ChatColor.GOLD + "Happy Food");
+        CustomModelDataComponent customModelDataComponent = happyGhastFoodMeta.getCustomModelDataComponent();
+        customModelDataComponent.setStrings(List.of("happy_ghast_food"));
+        happyGhastFoodMeta.setCustomModelDataComponent(customModelDataComponent);
+        happyGhastFoodMeta.setLore(List.of(ChatColor.RED + "Farts from happiness"));
+        happyGhastFood.setItemMeta(happyGhastFoodMeta);
+        NamespacedKey namespacedKey = new NamespacedKey(this, "happy_ghast_food");
+        ShapedRecipe recipe = new ShapedRecipe(namespacedKey, happyGhastFood);
+        recipe.shape("GGG", "GAG", "GGG");
+        recipe.setIngredient('G', Material.SNOWBALL);
+        recipe.setIngredient('A', Material.SNOW_BLOCK);
+        globalRecipes.add(recipe);
+
+        return globalRecipes;
     }
 
     public PlayerLoreRegister generatePlayerLoreRegister(){

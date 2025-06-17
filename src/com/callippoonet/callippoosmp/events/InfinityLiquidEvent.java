@@ -33,10 +33,13 @@ public class InfinityLiquidEvent implements Listener {
                 if(compStrings.size() == 1 && compStrings.get(0).equalsIgnoreCase("infinity_liquid")) {
                     BlockFace blockFace = event.getBlockFace();
                     Block relative = clickedBlock.getRelative(blockFace);
-                    relative.setType(Material.WATER);
+                    if(relative.getType() == Material.AIR || relative.getType() == Material.WATER) {
+                        if(relative.getWorld().getEnvironment() != World.Environment.NETHER) {
+                            relative.setType(Material.WATER);
+                        }
+                    }
                 }
             }
         }
     }
-
 }
