@@ -52,6 +52,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatEventListener(this), this);
         getServer().getPluginManager().registerEvents(new SpectralPickaxeListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerBukkitFillEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new InfinityLiquidEvent(), this);
     }
 
     public void registerCommands(PlayerLoreRegister playerLoreRegister) {
@@ -106,6 +107,28 @@ public class Main extends JavaPlugin {
     }
 
     public PlayerLore generateGlibboLore(){
+        /* Infinite water bucket */
+        ItemStack infinityLiquid = new ItemStack(Material.STICK);
+        LoreItem loreItem = new LoreItem.LoreItemBuilder(
+                this,
+                ChatColor.GOLD + "Infinity Liquid",
+                "callippoosmp.lore.item.infinity_liquid",
+                infinityLiquid
+        )
+                .setCustomModelDataComponentString("infinity_liquid")
+                .addLore(ChatColor.RED + "This magic stick keeps on spawning water. No idea how.")
+                .addEnchant(Enchantment.INFINITY, 1)
+                .isUnbreakable()
+                .build();
+
+        NamespacedKey namespacedKey = new NamespacedKey(this, "infinity_liquid");
+        ShapedRecipe recipe = new ShapedRecipe(namespacedKey, loreItem.itemStack);
+        recipe.shape("GSG", "SAS", "GSG");
+        recipe.setIngredient('G', Material.GOLD_INGOT);
+        recipe.setIngredient('S', Material.IRON_INGOT);
+        recipe.setIngredient('A', Material.WATER_BUCKET);
+        Bukkit.addRecipe(recipe);
+
         return new PlayerLore.PlayerLoreBuilder(
                 "glibbo",
                 "Glibbo"
@@ -114,6 +137,7 @@ public class Main extends JavaPlugin {
                 .addDescription("meest vergeten ondergrondse koraalrifgrotten van Minecraftia.")
                 .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.DOLPHINS_GRACE, 0)
                 .addPassiveEffect(PlayerLoreState.DEFAULT, PotionEffectType.WATER_BREATHING, 0)
+                .addRecipe(recipe)
                 .build();
     }
 
