@@ -3,7 +3,7 @@ version: 1.0 # the plugin's version
 author: Caleb Roelens
 main: com.callippoonet.callippoosmp.Main
 website: "https://callippoonet.com"
-api-version: '1.21.5'
+api-version: '1.21.6'
 commands:
   lore:
     description: Lore management command

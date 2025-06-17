@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../Minecraft JARS/Spigot/Spigot-API/target/spigot-api-1.21.5-R0.1-SNAPSHOT-shaded.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../Minecraft JARS/SHADED/spigot-api-1.21.6-R0.1-SNAPSHOT-shaded.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

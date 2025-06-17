@@ -1,7 +1,6 @@
 package com.callippoonet.callippoosmp;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 public class Permissions {

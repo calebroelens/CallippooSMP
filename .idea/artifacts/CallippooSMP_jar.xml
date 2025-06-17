@@ -3,9 +3,9 @@
     <output-path>$PROJECT_DIR$/out/artifacts/CallippooSMP_jar</output-path>
     <root id="archive" name="CallippooSMP.jar">
       <element id="module-output" name="CallippooSMP" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../../Minecraft JARS/Spigot/Spigot-API/target/spigot-api-1.21.5-R0.1-SNAPSHOT-shaded.jar" path-in-jar="/" />
       <element id="file-copy" path="$PROJECT_DIR$/src/plugin.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/src/player_lore.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/../../Minecraft JARS/SHADED/spigot-api-1.21.6-R0.1-SNAPSHOT-shaded.jar" />
     </root>
   </artifact>
 </component>

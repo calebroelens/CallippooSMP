@@ -1,9 +1,7 @@
 package com.callippoonet.callippoosmp.lore;
 
-import com.callippoonet.callippoosmp.Main;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnable;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableId;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -49,7 +47,6 @@ public class PlayerLore {
 
     public void resetAllConfigurations(Player player){
         for(PlayerLoreState loreState : PlayerLoreState.values()){
-            Bukkit.getLogger().info("Resetting configuration for player " + player.getName() + ": " + loreState);
             this.removePassiveEffects(player, loreState);
             this.removeAttributes(player, loreState);
         }
@@ -113,7 +110,6 @@ public class PlayerLore {
     public List<NamespacedKey> recipeNameSpaceKeys(){
         List<NamespacedKey> keys = new ArrayList<>();
         for(CraftingRecipe recipe: this.recipes){
-            Bukkit.getLogger().info("Found recipe " + recipe.getKey());
             keys.add(recipe.getKey());
         }
         return keys;

@@ -7,7 +7,7 @@ import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnable;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableContainer;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableId;
 import com.callippoonet.callippoosmp.runnable.PlayerLoreRunnableMap;
-import org.bukkit.Bukkit;
+
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.CraftingRecipe;
@@ -21,12 +21,14 @@ public class PlayerLoreRegister {
     private final PlayerLoreItemMap playerLoreItemMap;
     private PlayerLoreDataManager playerLoreDataManager;
     private final PlayerLoreRunnableMap playerLoreRunnableMap;
+    private final Map<Player, PlayerLore> playerLoreMap;
     Main plugin;
 
     public PlayerLoreRegister(Main plugin) {
         this.playerLore = new HashMap<>();
         this.playerLoreItemMap = new PlayerLoreItemMap();
         this.playerLoreRunnableMap = new PlayerLoreRunnableMap();
+        this.playerLoreMap = new HashMap<>();
         this.plugin = plugin;
         this.createPlayerLoreDataManager();
     }
@@ -51,6 +53,9 @@ public class PlayerLoreRegister {
 
     @Nullable
     public PlayerLore getPlayerLoreByPlayer(Player player){
+        if(playerLoreMap.containsKey(player)){
+            return playerLoreMap.get(player);
+        }
         return this.playerLoreDataManager.getActivePlayerLore(player);
     }
 
@@ -73,12 +78,13 @@ public class PlayerLoreRegister {
             playerLore.applyConfiguration(player, PlayerLoreState.DEFAULT);
             playerLoreName = playerLore.internalName;
         } else {
-            PlayerLore activeLore = this.playerLoreDataManager.getActivePlayerLore(player);
+            PlayerLore activeLore = this.getPlayerLoreByPlayer(player);
             if(activeLore != null){
                 activeLore.resetAllConfigurations(player);
             }
         }
         this.playerLoreDataManager.updatePlayerLore(player, playerLoreName);
+        this.playerLoreMap.put(player, playerLore);
     }
 
     public void changePlayerLoreState(Player player, PlayerLoreState newPlayerLoreState){
@@ -92,16 +98,13 @@ public class PlayerLoreRegister {
     public PlayerLoreRunnableContainer startPlayerLoreRunnable(Player player, PlayerLoreRunnableId id, boolean cancelIfExists){
         PlayerLoreData playerLoreData = this.playerLoreDataManager.getPlayerLoreData(player);
         if(playerLoreData == null) {
-            Bukkit.getLogger().info("Player " + player.getName() + " has no active lore data.");
             return null;
         };
         PlayerLore playerLore = playerLoreData.playerLore;
         if(!playerLore.playerLoreRunnables.isEmpty()){
             PlayerLoreRunnable runnable = playerLore.playerLoreRunnables.get(id);
-            Bukkit.getLogger().info("Player runnable: " + runnable.toString());
             return this.playerLoreRunnableMap.addOrReplaceRunnable(player, id, runnable, cancelIfExists);
         }
-        Bukkit.getLogger().info("Player " + player.getName() + " has no lore runnables.");
         return null;
     }
 }

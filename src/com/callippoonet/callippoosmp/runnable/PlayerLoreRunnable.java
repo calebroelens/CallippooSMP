@@ -1,9 +1,7 @@
 package com.callippoonet.callippoosmp.runnable;
 
 import com.callippoonet.callippoosmp.Main;
-import com.callippoonet.callippoosmp.lore.PlayerLore;
 import com.callippoonet.callippoosmp.lore.PlayerLoreState;
-import jdk.jshell.spi.ExecutionControl;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

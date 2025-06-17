@@ -1,6 +1,5 @@
 package com.callippoonet.callippoosmp.events;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
