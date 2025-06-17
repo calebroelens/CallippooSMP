@@ -2,6 +2,7 @@ package com.callippoonet.callippoosmp.events;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HappyGhast;
 import org.bukkit.entity.Player;

@@ -90,7 +90,7 @@ public class Main extends JavaPlugin {
         CustomModelDataComponent customModelDataComponent = happyGhastFoodMeta.getCustomModelDataComponent();
         customModelDataComponent.setStrings(List.of("happy_ghast_food"));
         happyGhastFoodMeta.setCustomModelDataComponent(customModelDataComponent);
-        happyGhastFoodMeta.setLore(List.of(ChatColor.RED + "Farts from happiness"));
+        happyGhastFoodMeta.setLore(List.of(ChatColor.RED + "Make your favorite flying pet happier."));
         happyGhastFood.setItemMeta(happyGhastFoodMeta);
         NamespacedKey namespacedKey = new NamespacedKey(this, "happy_ghast_food");
         ShapedRecipe recipe = new ShapedRecipe(namespacedKey, happyGhastFood);
